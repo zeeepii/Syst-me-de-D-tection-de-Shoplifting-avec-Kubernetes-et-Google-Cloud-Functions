@@ -1,0 +1,12 @@
+apiVersion: shoplift.example.com/v1
+kind: Client
+metadata:
+  labels:
+    app.kubernetes.io/name: client
+    app.kubernetes.io/instance: client-sample
+    app.kubernetes.io/part-of: shoplift-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: shoplift-operator
+  name: client-sample
+spec:
+  # TODO(user): Add fields here

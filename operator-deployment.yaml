@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shoplifting-detector-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shoplifting-detector-operator
+  template:
+    metadata:
+      labels:
+        app: shoplifting-detector-operator
+    spec:
+      serviceAccountName: shoplifting-detector-operator
+      containers:
+      - name: operator
+        image: ziedgormzi/controller:latest
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: shoplifting-detector-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: shoplifting-detector-operator
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+- apiGroups: ["shoplift.example.com"]
+  resources: ["clients"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: shoplifting-detector-operator
+subjects:
+- kind: ServiceAccount
+  name: shoplifting-detector-operator
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: shoplifting-detector-operator
+  apiGroup: rbac.authorization.k8s.io
+     
